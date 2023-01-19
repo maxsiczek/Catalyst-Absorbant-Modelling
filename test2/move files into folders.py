@@ -1,3 +1,4 @@
+#pushes all required files into the folders
 import shutil, os
 
 for i in range(0,100):
