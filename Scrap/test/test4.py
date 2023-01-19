@@ -1,0 +1,39 @@
+from clusterx.calculators.emt import EMT2 # Load the EMT calculator from ASE
+from clusterx.visualization import plot_property_vs_concentration
+import os
+from ase.build import fcc111, add_adsorbate  # ASE's utilities to build the surface
+from clusterx.parent_lattice import ParentLattice
+from clusterx.structures_set import StructuresSet
+from clusterx.visualization import juview
+from clusterx.super_cell import SuperCell
+from random import randint
+from ase.io import read, write
+from ase.build import fcc111, add_adsorbate
+import numpy as np
+from clusterx.super_cell import SuperCell
+import numpy as np
+from clusterx.structures_set import StructuresSet
+from clusterx.calculators.emt import EMT2 # Load the EMT calculator from ASE
+from clusterx.visualization import plot_property_vs_concentration
+from ase.io import vasp
+import os
+
+
+pri2 = fcc111('Pd', size=(1, 1, 3))  # 3-atomic-layer Pd slab
+pri2.center(vacuum=10.0, axis=2)  # add vacuum along z-axis
+# Build a 3-layer Au and Pd slab
+platt2 = ParentLattice(pri2, site_symbols=[['Pd', 'Au'], ['Pd', 'Au'], ['Pd', 'Au']])
+# Build the parent lattice and a 4x4 supercell
+scell2 = SuperCell(platt2, [4, 4])
+sset4 = StructuresSet(platt2)
+
+
+os.chdir('0')
+a=read('0.xyz')
+sset4.add_structure(a)
+os.chdir('..')
+sset4.set_calculator(EMT2())
+print(vars(sset4))
+print(sset4.calculate_property())
+print(sset4.get_structures())
+#"total_energy_emt"

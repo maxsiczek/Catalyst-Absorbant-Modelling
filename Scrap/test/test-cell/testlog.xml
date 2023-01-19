@@ -1,0 +1,1522 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="12" skipped="0" tests="19" time="15.858" timestamp="2022-06-14T11:27:17.909561" hostname="DESKTOP-QRCE6TO"><testcase classname="venv.lib.site-packages.clusterx.test.test_clathrate_mc" name="test_clathrate_mc" time="0.019"><failure message="FileNotFoundError: [WinError 2] The system cannot find the file specified">def test_clathrate_mc():
+    
+&gt;       subprocess.call(["rm","-f","test_clathrate_mc-cluster_orbit.json"])
+
+..\..\venv\lib\site-packages\clusterx\test\test_clathrate_mc.py:18: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:345: in call
+    with Popen(*popenargs, **kwargs) as p:
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:966: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;Popen: returncode: None args: ['rm', '-f', 'test_clathrate_mc-cluster_orbit...&gt;, args = 'rm -f test_clathrate_mc-cluster_orbit.json', executable = None, preexec_fn = None
+close_fds = True, pass_fds = (), cwd = None, env = None, startupinfo = &lt;subprocess.STARTUPINFO object at 0x00000239160C2920&gt;, creationflags = 0, shell = False, p2cread = -1, p2cwrite = -1
+c2pread = -1, c2pwrite = -1, errread = -1, errwrite = -1, unused_restore_signals = True, unused_gid = None, unused_gids = None, unused_uid = None, unused_umask = -1
+unused_start_new_session = False
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            comspec = os.environ.get("COMSPEC", "cmd.exe")
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+&gt;           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 2] The system cannot find the file specified
+
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:1435: FileNotFoundError</failure></testcase><testcase classname="venv.lib.site-packages.clusterx.test.test_cluster" name="test_cluster" time="0.002" /><testcase classname="venv.lib.site-packages.clusterx.test.test_cluster_correlations" name="test_cluster_correlations" time="1.245"><failure message="FileNotFoundError: [WinError 2] The system cannot find the file specified">def test_cluster_correlations():
+        """Test calculation of cluster correlations.
+    
+        After successful execution of the test, the generated structure and clusters pool may be visualized with the command::
+    
+            ase gui test_cluster_correlations_structure_#.json
+            ase gui test_cluster_correlations_cpool.json
+    
+        """
+    
+        def scalar_product_basis_set(function1, function2, alpha1, alpha2, M = 3, symmetric = False, scaled = True):
+            """
+            Function to test basis single site basis functions regarding their orthogonality.
+            Expects that sigma in {0,1,...,M-1}, where sigma is an ising type discrete spin varaible and M is the number of species in an alloy.
+            """
+            scaling = 1 / M if scaled else 1
+            if symmetric:
+                sigmas = [x for x in range(-int(M/2),int(M/2)+1)]
+                if M%2 == 0:
+                    sigmas.remove(0)
+            else:
+                sigmas = [x for x in range(M)]
+            scalar_product = 0
+            for sigma in sigmas:
+                scalar_product += function1(alpha1, sigma, M) * function2(alpha2, sigma, M)
+            scalar_product = scalar_product * scaling
+            return scalar_product
+    
+        def test_orthonormality(function, m=3, symmetric = True):
+            print("\northonormality:\nj k &lt;theta_j | theta_k&gt;")
+            for j in range(m):
+                for k in range(m):
+                    print(j , k, round(scalar_product_basis_set(function, function, j, k , M = m, symmetric = symmetric),10))
+    
+        cell = [[3,0,0],
+                [0,1,0],
+                [0,0,5]]
+    
+        positions = [[0,0,0],
+            [1,0,0],
+            [2,0,0]]
+    
+        pbc = [True,True,False]
+    
+        pri = Atoms(['H','H','H'], positions=positions, cell=cell, pbc=pbc)
+        su1 = Atoms(['C','H','H'], positions=positions, cell=cell, pbc=pbc)
+        su2 = Atoms(['H','He','H'], positions=positions, cell=cell, pbc=pbc)
+        su3 = Atoms(['H','N','H'], positions=positions, cell=cell, pbc=pbc)
+    
+        plat = ParentLattice(pri,substitutions=[su1,su2,su3],pbc=pbc)
+        cpool = ClustersPool(plat, npoints=[1,2], radii=[0,1.2])
+        corrcal_tri = CorrelationsCalculator("trigonometric", plat, cpool)
+        corrcal_poly = CorrelationsCalculator("polynomial", plat, cpool)
+    
+        scell1 = SuperCell(plat,np.array([(1,0,0),(0,3,0),(0,0,1)]))
+        structure1 = Structure(scell1,[1,1,1,6,7,1,1,2,1])
+        corrs1_tri = corrcal_tri.get_cluster_correlations(structure1)
+        corrs1_poly = corrcal_poly.get_cluster_correlations(structure1)
+    
+        # Doubling of structure1. Correlations should not change.
+        scell2 = SuperCell(plat,np.array([(1,0,0),(0,6,0),(0,0,1)]))
+        structure2 = Structure(scell2,[1,1,1,6,7,1,1,2,1,1,1,1,6,7,1,1,2,1])
+        corrs2_tri = corrcal_tri.get_cluster_correlations(structure2)
+        corrs2_poly = corrcal_poly.get_cluster_correlations(structure2)
+    
+        t = time.time()
+        test_orthonormality(corrcal_tri.site_basis_function, symmetric = False)
+        print('Time for trigonometric basis', time.time() - t)
+        t = time.time()
+        test_orthonormality(corrcal_poly.site_basis_function, symmetric = False)
+        print('Time for polynomial basis', time.time() - t)
+    
+        print('\nPolynomial basis functions (m=3):')
+        corrcal_poly.basis_set.print_basis_functions(3)
+    
+        print("\nTest binary-linear basis")
+    
+        bin_plat = ParentLattice(pri, substitutions = [su1], pbc = pbc)
+        bin_cpool = ClustersPool(bin_plat, npoints=[1,2], radii=[0,1.2])
+        coorrcal_bin_lin = CorrelationsCalculator("binary-linear", bin_plat, bin_cpool)
+    
+        scell_bin = SuperCell(bin_plat,np.array([(1,0,0),(0,3,0),(0,0,1)]))
+        structure_bin = Structure(scell1,[1,1,1,6,1,1,6,1,1])
+        corrs_bin = coorrcal_bin_lin.get_cluster_correlations(structure_bin)
+    
+        print ("\n\n========Test writes========")
+        print (test_cluster_correlations.__doc__)
+        scell = cpool.get_cpool_scell()
+&gt;       cpool.write_clusters_db(cpool.get_cpool(),scell,"test_cluster_correlations_cpool.json")
+
+..\..\venv\lib\site-packages\clusterx\test\test_cluster_correlations.py:104: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+..\..\venv\lib\site-packages\clusterx\clusters\clusters_pool.py:567: in write_clusters_db
+    call(["rm","-f",db_name])
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:345: in call
+    with Popen(*popenargs, **kwargs) as p:
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:966: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;Popen: returncode: None args: ['rm', '-f', 'test_cluster_correlations_cpool...&gt;, args = 'rm -f test_cluster_correlations_cpool.json', executable = None, preexec_fn = None
+close_fds = True, pass_fds = (), cwd = None, env = None, startupinfo = &lt;subprocess.STARTUPINFO object at 0x0000023919377CA0&gt;, creationflags = 0, shell = False, p2cread = -1, p2cwrite = -1
+c2pread = -1, c2pwrite = -1, errread = -1, errwrite = -1, unused_restore_signals = True, unused_gid = None, unused_gids = None, unused_uid = None, unused_umask = -1
+unused_start_new_session = False
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            comspec = os.environ.get("COMSPEC", "cmd.exe")
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+&gt;           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 2] The system cannot find the file specified
+
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:1435: FileNotFoundError</failure></testcase><testcase classname="venv.lib.site-packages.clusterx.test.test_cluster_expansion" name="test_cluster_expansion" time="1.037"><failure message="FileNotFoundError: [WinError 2] The system cannot find the file specified">def test_cluster_expansion():
+        """Test generation of clusters pools.
+    
+        After successful execution of the test, the generated structures and
+        clusters pool may be visualized with the command::
+    
+            ase gui test_cluster_expansion_[...].json
+    
+        """
+    
+        cell = [[3,0,0],
+                [0,1,0],
+                [0,0,5]]
+        positions = [
+            [0,0,0],
+            [1,0,0],
+            [2,0,0]]
+        pbc = [True,True,False]
+    
+        pri = Atoms(['H','H','H'], positions=positions, cell=cell, pbc=pbc)
+        su1 = Atoms(['C','H','H'], positions=positions, cell=cell, pbc=pbc)
+        su2 = Atoms(['H','He','H'], positions=positions, cell=cell, pbc=pbc)
+        su3 = Atoms(['H','N','H'], positions=positions, cell=cell, pbc=pbc)
+    
+        plat = ParentLattice(pri,substitutions=[su1,su2,su3],pbc=pbc)
+        #cpool = ClustersPool(plat, npoints=[0,1,2,3,4], radii=[0,0,2.3,1.42,1.42])
+        cpool = ClustersPool(plat, npoints=[1,2,3,4], radii=[0,2.3,1.42,1.42])
+&gt;       cpool.write_clusters_db(cpool.get_cpool(),cpool.get_cpool_scell(),"cpool.json")
+
+..\..\venv\lib\site-packages\clusterx\test\test_cluster_expansion.py:46: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+..\..\venv\lib\site-packages\clusterx\clusters\clusters_pool.py:567: in write_clusters_db
+    call(["rm","-f",db_name])
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:345: in call
+    with Popen(*popenargs, **kwargs) as p:
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:966: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;Popen: returncode: None args: ['rm', '-f', 'cpool.json']&gt;, args = 'rm -f cpool.json', executable = None, preexec_fn = None, close_fds = True, pass_fds = (), cwd = None, env = None
+startupinfo = &lt;subprocess.STARTUPINFO object at 0x00000239193C0D60&gt;, creationflags = 0, shell = False, p2cread = -1, p2cwrite = -1, c2pread = -1, c2pwrite = -1, errread = -1
+errwrite = -1, unused_restore_signals = True, unused_gid = None, unused_gids = None, unused_uid = None, unused_umask = -1, unused_start_new_session = False
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            comspec = os.environ.get("COMSPEC", "cmd.exe")
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+&gt;           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 2] The system cannot find the file specified
+
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:1435: FileNotFoundError</failure></testcase><testcase classname="venv.lib.site-packages.clusterx.test.test_cluster_orbit" name="test_cluster_orbit" time="0.114"><failure message="FileNotFoundError: [WinError 2] The system cannot find the file specified">def test_cluster_orbit():
+        """Test creation of cluster orbit in supercell using spglib
+    
+        After running the test, the orbit can be visualized with the command::
+    
+            ase gui test_cluster_orbit_#.json
+        """
+        tassert = True
+        #tassert = False
+        test_cases = [0,1,2,3,4,5]
+        #test_cases = [0]
+        orbits = [None,None,None,None,None,None]
+        for test_case in test_cases:
+            if test_case == 0:
+                # Perfect cubic lattice. The tested cluster is such that many interactions
+                # with the periodic images of the crystal are present.
+                a = 3.62/np.sqrt(2.0)
+                positions = [(0,0,0)]
+                cell = [(a,0,0),(0,a,0),(0,0,a)]
+                pbc = (True,True,True)
+                pri = Atoms('Cu', positions=positions, cell= cell, pbc= pbc)
+                sub = Atoms('Al', positions=positions, cell= cell, pbc= pbc)
+                sub2 = Atoms('Na', positions=positions, cell= cell, pbc= pbc)
+    
+                plat = ParentLattice(pri, substitutions=[sub,sub2], pbc=pbc)
+                scell = SuperCell(plat,[(5,0,0),(0,2,0),(0,0,1)])
+    
+                cl = ClustersPool(plat)
+    
+                orbit,mult = cl.get_cluster_orbit(scell, [0,2], [11,11])
+                db_name = "test_cluster_orbit_%s.json"%(test_case)
+&gt;               cl.write_clusters_db(orbit, scell, db_name)
+
+..\..\venv\lib\site-packages\clusterx\test\test_cluster_orbit.py:45: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+..\..\venv\lib\site-packages\clusterx\clusters\clusters_pool.py:567: in write_clusters_db
+    call(["rm","-f",db_name])
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:345: in call
+    with Popen(*popenargs, **kwargs) as p:
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:966: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;Popen: returncode: None args: ['rm', '-f', 'test_cluster_orbit_0.json']&gt;, args = 'rm -f test_cluster_orbit_0.json', executable = None, preexec_fn = None, close_fds = True
+pass_fds = (), cwd = None, env = None, startupinfo = &lt;subprocess.STARTUPINFO object at 0x00000239193779D0&gt;, creationflags = 0, shell = False, p2cread = -1, p2cwrite = -1, c2pread = -1
+c2pwrite = -1, errread = -1, errwrite = -1, unused_restore_signals = True, unused_gid = None, unused_gids = None, unused_uid = None, unused_umask = -1, unused_start_new_session = False
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            comspec = os.environ.get("COMSPEC", "cmd.exe")
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+&gt;           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 2] The system cannot find the file specified
+
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:1435: FileNotFoundError</failure></testcase><testcase classname="venv.lib.site-packages.clusterx.test.test_cluster_selector_split_bregman" name="test_cluster_selector_split_bregman" time="2.150"><failure message="FileNotFoundError: [WinError 2] The system cannot find the file specified">def test_cluster_selector_split_bregman():
+    
+&gt;       strset, energies, comat, clmults, cpool = get_structure_set()
+
+..\..\venv\lib\site-packages\clusterx\test\test_cluster_selector_split_bregman.py:24: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+..\..\venv\lib\site-packages\clusterx\test\test_cluster_selector_split_bregman.py:72: in get_structure_set
+    cpool.write_clusters_db(cpool.get_cpool(),cpool.get_cpool_scell(),"cpool.json")
+..\..\venv\lib\site-packages\clusterx\clusters\clusters_pool.py:567: in write_clusters_db
+    call(["rm","-f",db_name])
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:345: in call
+    with Popen(*popenargs, **kwargs) as p:
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:966: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;Popen: returncode: None args: ['rm', '-f', 'cpool.json']&gt;, args = 'rm -f cpool.json', executable = None, preexec_fn = None, close_fds = True, pass_fds = (), cwd = None, env = None
+startupinfo = &lt;subprocess.STARTUPINFO object at 0x0000023919326530&gt;, creationflags = 0, shell = False, p2cread = -1, p2cwrite = -1, c2pread = -1, c2pwrite = -1, errread = -1
+errwrite = -1, unused_restore_signals = True, unused_gid = None, unused_gids = None, unused_uid = None, unused_umask = -1, unused_start_new_session = False
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            comspec = os.environ.get("COMSPEC", "cmd.exe")
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+&gt;           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 2] The system cannot find the file specified
+
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:1435: FileNotFoundError</failure></testcase><testcase classname="venv.lib.site-packages.clusterx.test.test_clusters_generation" name="test_clusters_generation" time="0.246"><failure message="FileNotFoundError: [WinError 2] The system cannot find the file specified">def test_clusters_generation():
+        """Test generation of clusters pools.
+    
+        After successful execution of the test, the generated clusters may be visualized with the command::
+    
+            ase gui test_clusters_generation_#.json
+    
+        """
+        tassert = True
+        #######################################################
+        # Part 1: 2D, radii.
+        #######################################################
+        """
+        print("\nPart I")
+        cell = [[3,0,0],
+                [0,1,0],
+                [0,0,5]]
+        positions = [
+            [0,0,0],
+            [1,0,0],
+            [2,0,0]]
+        pbc = [True,True,False]
+    
+        pri = Atoms(['H','H','H'], positions=positions, cell=cell, pbc=pbc)
+        su1 = Atoms(['C','H','H'], positions=positions, cell=cell, pbc=pbc)
+        su2 = Atoms(['H','He','H'], positions=positions, cell=cell, pbc=pbc)
+        su3 = Atoms(['H','N','H'], positions=positions, cell=cell, pbc=pbc)
+    
+        pl = ParentLattice(pri,substitutions=[su1,su2,su3],pbc=pbc)
+    
+        cp = ClustersPool(pl, npoints=[1,2,3], radii=[0,2.1,2.1])
+        cp.write_clusters_db(db_name="test_clusters_generation_1.json")
+    
+        print("\nMult: ", cp.get_multiplicities())
+        print("\nMult2: ", cp.get_cluster_multiplicities())
+    
+        if tassert:
+            atom_idxs, atom_nrs = cp.get_cpool_arrays()
+        """
+        #######################################################
+        # Part 2: 1D, supercell.
+        #######################################################
+        print("Part II")
+        a=3.0
+        cell = np.array([[1,0,0],[0,4,0],[0,0,1]])
+        positions = np.array([[0,0,0],[0,1,0],[0,2,0],[0,3,0]])
+        sites = [[12,13],[12,13],[12,13],[12,13]]
+        pris = Atoms(cell=cell*a, positions=positions*a)
+    
+        pl = ParentLattice(pris, sites=sites, pbc=(1,0,0))
+        sc = SuperCell(pl,[[4,0,0],[0,1,0],[0,0,1]])
+    
+    
+        cp = ClustersPool(pl,npoints=[1,2],super_cell=sc) # Here radii are not given, therefore all the clusters which can fit in the supercell are generated.
+        #cp = ClustersPool(pl,npoints=[0,1,2],radii=[0,0,3.9*a]) # Here radii are not given, therefore all the clusters which can fit in the supercell are generated.
+&gt;       cp.write_clusters_db(db_name="test_clusters_generation_2.json")
+
+..\..\venv\lib\site-packages\clusterx\test\test_clusters_generation.py:70: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+..\..\venv\lib\site-packages\clusterx\clusters\clusters_pool.py:567: in write_clusters_db
+    call(["rm","-f",db_name])
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:345: in call
+    with Popen(*popenargs, **kwargs) as p:
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:966: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;Popen: returncode: None args: ['rm', '-f', 'test_clusters_generation_2.json']&gt;, args = 'rm -f test_clusters_generation_2.json', executable = None, preexec_fn = None
+close_fds = True, pass_fds = (), cwd = None, env = None, startupinfo = &lt;subprocess.STARTUPINFO object at 0x0000023919511DE0&gt;, creationflags = 0, shell = False, p2cread = -1, p2cwrite = -1
+c2pread = -1, c2pwrite = -1, errread = -1, errwrite = -1, unused_restore_signals = True, unused_gid = None, unused_gids = None, unused_uid = None, unused_umask = -1
+unused_start_new_session = False
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            comspec = os.environ.get("COMSPEC", "cmd.exe")
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+&gt;           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 2] The system cannot find the file specified
+
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:1435: FileNotFoundError</failure></testcase><testcase classname="venv.lib.site-packages.clusterx.test.test_clusters_selector" name="test_clusters_selector" time="2.129"><failure message="FileNotFoundError: [WinError 2] The system cannot find the file specified">def test_clusters_selector():
+        """Test model optimization
+    
+        After successful execution of the test, the generated structures and
+        clusters pool may be visualized with the command::
+    
+            ase gui test_clusters_selector_[...].json
+    
+        """
+    
+        cell = [[3,0,0],
+                [0,1,0],
+                [0,0,5]]
+        positions = [
+            [0,0,0],
+            [1,0,0],
+            [2,0,0]]
+        pbc = [True,True,False]
+    
+        pri = Atoms(['H','H','H'], positions=positions, cell=cell, pbc=pbc)
+        su1 = Atoms(['C','H','H'], positions=positions, cell=cell, pbc=pbc)
+        su2 = Atoms(['H','He','H'], positions=positions, cell=cell, pbc=pbc)
+        su3 = Atoms(['H','N','H'], positions=positions, cell=cell, pbc=pbc)
+    
+        plat = ParentLattice(pri,substitutions=[su1,su2,su3],pbc=pbc)
+        cpool = ClustersPool(plat, npoints=[0,1,2,3,4], radii=[0,0,2.3,2.3,1.42])
+        #cpool = ClustersPool(plat, npoints=[1,2,3,4], radii=[0,2.3,1.42,1.42])
+&gt;       cpool.write_clusters_db(cpool.get_cpool(),cpool.get_cpool_scell(),"cpool.json")
+
+..\..\venv\lib\site-packages\clusterx\test\test_clusters_selector.py:51: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+..\..\venv\lib\site-packages\clusterx\clusters\clusters_pool.py:567: in write_clusters_db
+    call(["rm","-f",db_name])
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:345: in call
+    with Popen(*popenargs, **kwargs) as p:
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:966: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;Popen: returncode: None args: ['rm', '-f', 'cpool.json']&gt;, args = 'rm -f cpool.json', executable = None, preexec_fn = None, close_fds = True, pass_fds = (), cwd = None, env = None
+startupinfo = &lt;subprocess.STARTUPINFO object at 0x00000239193A8BB0&gt;, creationflags = 0, shell = False, p2cread = -1, p2cwrite = -1, c2pread = -1, c2pwrite = -1, errread = -1
+errwrite = -1, unused_restore_signals = True, unused_gid = None, unused_gids = None, unused_uid = None, unused_umask = -1, unused_start_new_session = False
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            comspec = os.environ.get("COMSPEC", "cmd.exe")
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+&gt;           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 2] The system cannot find the file specified
+
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:1435: FileNotFoundError</failure></testcase><testcase classname="venv.lib.site-packages.clusterx.test.test_clusters_selector_lasso" name="test_clusters_selector_lasso" time="3.779"><failure message="FileNotFoundError: [WinError 2] The system cannot find the file specified">def test_clusters_selector_lasso():
+        """Test model optimization
+    
+        After successful execution of the test, the generated structures and
+        clusters pool may be visualized with the command::
+    
+            ase gui test_clusters_selector_[...].json
+    
+        """
+    
+        cell = [[3,0,0],
+                [0,1,0],
+                [0,0,5]]
+        positions = [
+            [0,0,0],
+            [1,0,0],
+            [2,0,0]]
+        pbc = [True,True,False]
+    
+        pri = Atoms(['H','H','H'], positions=positions, cell=cell, pbc=pbc)
+        su1 = Atoms(['C','H','H'], positions=positions, cell=cell, pbc=pbc)
+        su2 = Atoms(['H','He','H'], positions=positions, cell=cell, pbc=pbc)
+        su3 = Atoms(['H','N','H'], positions=positions, cell=cell, pbc=pbc)
+    
+        plat = ParentLattice(pri,substitutions=[su1,su2,su3],pbc=pbc)
+        cpool = ClustersPool(plat, npoints=[0,1,2,3,4], radii=[0,0,2.3,2.3,2.3])
+        #cpool = ClustersPool(plat, npoints=[1,2,3,4], radii=[0,2.3,1.42,1.42])
+&gt;       cpool.write_clusters_db(cpool.get_cpool(),cpool.get_cpool_scell(),"cpool.json")
+
+..\..\venv\lib\site-packages\clusterx\test\test_clusters_selector_lasso.py:52: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+..\..\venv\lib\site-packages\clusterx\clusters\clusters_pool.py:567: in write_clusters_db
+    call(["rm","-f",db_name])
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:345: in call
+    with Popen(*popenargs, **kwargs) as p:
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:966: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;Popen: returncode: None args: ['rm', '-f', 'cpool.json']&gt;, args = 'rm -f cpool.json', executable = None, preexec_fn = None, close_fds = True, pass_fds = (), cwd = None, env = None
+startupinfo = &lt;subprocess.STARTUPINFO object at 0x00000239195DFCD0&gt;, creationflags = 0, shell = False, p2cread = -1, p2cwrite = -1, c2pread = -1, c2pwrite = -1, errread = -1
+errwrite = -1, unused_restore_signals = True, unused_gid = None, unused_gids = None, unused_uid = None, unused_umask = -1, unused_start_new_session = False
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            comspec = os.environ.get("COMSPEC", "cmd.exe")
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+&gt;           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 2] The system cannot find the file specified
+
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:1435: FileNotFoundError</failure></testcase><testcase classname="venv.lib.site-packages.clusterx.test.test_concentration" name="test_concentration" time="0.015" /><testcase classname="venv.lib.site-packages.clusterx.test.test_emt2_calculator" name="test_emt2_calculator" time="0.511" /><testcase classname="venv.lib.site-packages.clusterx.test.test_folders" name="test_folders" time="1.024"><failure message="AttributeError: 'bool' object has no attribute 'all'">def test_folders():
+        """
+        Test creation of folders for ab-initio runs and reading of property values
+        from those folders.
+        """
+    
+        a = 3.0
+        plat = ParentLattice(Atoms(cell=a*np.diag([1,1,1]), positions=[[0,0,0]],numbers=[29]),site_symbols=[["Cu","Au"]],pbc=(1,1,1))
+        scell = SuperCell(plat, np.diag([2,2,2]))
+        sset1 = StructuresSet(plat)
+    
+        nst = 15
+        for i in range(nst):
+            sset1.add_structure(scell.gen_random(nsubs={0:[4]}))
+    
+        isok1 = True
+        isok2 = True
+        isok3 = True
+    
+        sset1.write_files(prefix = "random_strs-") # tests folder creation and writing of structure files
+        sset1.calculate_energies(EMT2()) # test iterating over folders and calculating energies and writing energy files
+        sset1.read_property_values(property_name = "my_total_energy") # test
+        e1 = sset1.get_property_values("my_total_energy")
+    
+        sset2 = StructuresSet(plat)
+        sset2.add_structures(structures=sset1.get_folders_db_fname()) # Test adding structures from json database file
+        for s1,s2 in zip(sset1,sset2):
+            print((s1.get_atomic_numbers()==s2.get_atomic_numbers()).all())
+    
+        sset3 = StructuresSet(plat, folders_db_fname=sset1.get_folders_db_fname()) # Test init structures set from folders database
+        e3 = sset3.get_property_values("my_total_energy")
+    
+&gt;       print((e1==e3).all())
+E       AttributeError: 'bool' object has no attribute 'all'
+
+..\..\venv\lib\site-packages\clusterx\test\test_folders.py:45: AttributeError</failure></testcase><testcase classname="venv.lib.site-packages.clusterx.test.test_get_all_hnf" name="test_get_all_hnf" time="0.002" /><testcase classname="venv.lib.site-packages.clusterx.test.test_get_unique_supercells" name="test_get_unique_supercells" time="1.530" /><testcase classname="venv.lib.site-packages.clusterx.test.test_is_nary" name="test_is_nary" time="0.003"><failure message="ase.build.supercells.SupercellError: Number of atoms in supercell: -32, expected: 32">def test_is_nary():
+        """Test ParentLattice.is_nary() method
+        """
+        cu = bulk("Cu","fcc")
+        au = bulk("Au","fcc")
+        ag = bulk("Ag","fcc")
+    
+        plat = ParentLattice(atoms=cu, substitutions=[au,ag])
+    
+&gt;       scell = SuperCell(plat, [[2,2,-2],[2,-2,2],[-2,2,2]])
+
+..\..\venv\lib\site-packages\clusterx\test\test_is_nary.py:18: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+..\..\venv\lib\site-packages\clusterx\super_cell.py:91: in __init__
+    prist = make_supercell(parent_lattice.get_pristine(),self._p)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+prim = Atoms(symbols='Cu', pbc=True, cell=[[0.0, 1.805, 1.805], [1.805, 0.0, 1.805], [1.805, 1.805, 0.0]]), P = array([[ 2,  2, -2],
+       [ 2, -2,  2],
+       [-2,  2,  2]])
+wrap = True, tol = 1e-05
+
+    def make_supercell(prim, P, wrap=True, tol=1e-5):
+        r"""Generate a supercell by applying a general transformation (*P*) to
+        the input configuration (*prim*).
+    
+        The transformation is described by a 3x3 integer matrix
+        `\mathbf{P}`. Specifically, the new cell metric
+        `\mathbf{h}` is given in terms of the metric of the input
+        configuration `\mathbf{h}_p` by `\mathbf{P h}_p =
+        \mathbf{h}`.
+    
+        Parameters:
+    
+        prim: ASE Atoms object
+            Input configuration.
+        P: 3x3 integer matrix
+            Transformation matrix `\mathbf{P}`.
+        wrap: bool
+            wrap in the end
+        tol: float
+            tolerance for wrapping
+        """
+    
+        supercell_matrix = P
+        supercell = clean_matrix(supercell_matrix @ prim.cell)
+    
+        # cartesian lattice points
+        lattice_points_frac = lattice_points_in_supercell(supercell_matrix)
+        lattice_points = np.dot(lattice_points_frac, supercell)
+    
+        superatoms = Atoms(cell=supercell, pbc=prim.pbc)
+    
+        for lp in lattice_points:
+            shifted_atoms = prim.copy()
+            shifted_atoms.positions += lp
+            superatoms.extend(shifted_atoms)
+    
+        # check number of atoms is correct
+        n_target = int(np.round(np.linalg.det(supercell_matrix) * len(prim)))
+        if n_target != len(superatoms):
+            msg = "Number of atoms in supercell: {}, expected: {}".format(
+                n_target, len(superatoms)
+            )
+&gt;           raise SupercellError(msg)
+E           ase.build.supercells.SupercellError: Number of atoms in supercell: -32, expected: 32
+
+..\..\venv\lib\site-packages\ase\build\supercells.py:185: SupercellError</failure></testcase><testcase classname="venv.lib.site-packages.clusterx.test.test_lattice_representation" name="test_concentration" time="0.019" /><testcase classname="venv.lib.site-packages.clusterx.test.test_metropolis" name="test_metropolis" time="0.018"><failure message="FileNotFoundError: [WinError 2] The system cannot find the file specified">def test_metropolis():
+    
+&gt;       subprocess.call(["rm","-f","test_clathrate_mc-cluster_orbit.json"])
+
+..\..\venv\lib\site-packages\clusterx\test\test_metropolis.py:27: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:345: in call
+    with Popen(*popenargs, **kwargs) as p:
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:966: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;Popen: returncode: None args: ['rm', '-f', 'test_clathrate_mc-cluster_orbit...&gt;, args = 'rm -f test_clathrate_mc-cluster_orbit.json', executable = None, preexec_fn = None
+close_fds = True, pass_fds = (), cwd = None, env = None, startupinfo = &lt;subprocess.STARTUPINFO object at 0x00000239193C3010&gt;, creationflags = 0, shell = False, p2cread = -1, p2cwrite = -1
+c2pread = -1, c2pwrite = -1, errread = -1, errwrite = -1, unused_restore_signals = True, unused_gid = None, unused_gids = None, unused_uid = None, unused_umask = -1
+unused_start_new_session = False
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            comspec = os.environ.get("COMSPEC", "cmd.exe")
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+&gt;           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 2] The system cannot find the file specified
+
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:1435: FileNotFoundError</failure></testcase><testcase classname="venv.lib.site-packages.clusterx.test.test_parent_lattice_creation" name="test_parent_lattice_creation" time="0.161" /><testcase classname="venv.lib.site-packages.clusterx.test.test_structure_selector" name="test_structure_selector" time="0.087"><failure message="FileNotFoundError: [WinError 2] The system cannot find the file specified">def test_structure_selector():
+    
+        """Test structure selection routine
+           Tests all subroutines and some variables of the StructureSelector class
+        """
+    
+        cell = [[1,0,0],
+                [0,1,0],
+                [0,0,5]]
+        positions = [[0,0,0]]
+        pbc = [True,True,False]
+    
+        pri = Atoms(['H'], positions=positions, cell=cell, pbc=pbc)
+        su1 = Atoms(['C'], positions=positions, cell=cell, pbc=pbc)
+    
+        plat = ParentLattice(pri,substitutions=[su1],pbc=pbc)
+        """
+        cell = [[3,0,0],
+                [0,1,0],
+                [0,0,5]]
+        positions = [
+            [0,0,0],
+            [1,0,0],
+            [2,0,0]]
+        pbc = [True,True,False]
+    
+        pri = Atoms(['H','H','H'], positions=positions, cell=cell, pbc=pbc)
+        su1 = Atoms(['C','H','H'], positions=positions, cell=cell, pbc=pbc)
+        su2 = Atoms(['H','He','H'], positions=positions, cell=cell, pbc=pbc)
+        su3 = Atoms(['H','N','H'], positions=positions, cell=cell, pbc=pbc)
+    
+        plat = ParentLattice(pri,substitutions=[su1,su2,su3],pbc=pbc)
+        """
+        #cpool = ClustersPool(plat, npoints=[0,1,2,3,4], radii=[0,0,2.3,1.42,1.42])
+        cpool = ClustersPool(plat, npoints=[1,2], radii=[0,1.1])
+    
+&gt;       cpool.write_clusters_db(cpool.get_cpool(),cpool.get_cpool_scell(),"cpool.json")
+
+..\..\venv\lib\site-packages\clusterx\test\test_structure_selector.py:54: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+..\..\venv\lib\site-packages\clusterx\clusters\clusters_pool.py:567: in write_clusters_db
+    call(["rm","-f",db_name])
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:345: in call
+    with Popen(*popenargs, **kwargs) as p:
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:966: in __init__
+    self._execute_child(args, executable, preexec_fn, close_fds,
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = &lt;Popen: returncode: None args: ['rm', '-f', 'cpool.json']&gt;, args = 'rm -f cpool.json', executable = None, preexec_fn = None, close_fds = True, pass_fds = (), cwd = None, env = None
+startupinfo = &lt;subprocess.STARTUPINFO object at 0x00000239195AD750&gt;, creationflags = 0, shell = False, p2cread = -1, p2cwrite = -1, c2pread = -1, c2pwrite = -1, errread = -1
+errwrite = -1, unused_restore_signals = True, unused_gid = None, unused_gids = None, unused_uid = None, unused_umask = -1, unused_start_new_session = False
+
+    def _execute_child(self, args, executable, preexec_fn, close_fds,
+                       pass_fds, cwd, env,
+                       startupinfo, creationflags, shell,
+                       p2cread, p2cwrite,
+                       c2pread, c2pwrite,
+                       errread, errwrite,
+                       unused_restore_signals,
+                       unused_gid, unused_gids, unused_uid,
+                       unused_umask,
+                       unused_start_new_session):
+        """Execute program (MS Windows version)"""
+    
+        assert not pass_fds, "pass_fds not supported on Windows."
+    
+        if isinstance(args, str):
+            pass
+        elif isinstance(args, bytes):
+            if shell:
+                raise TypeError('bytes args is not allowed on Windows')
+            args = list2cmdline([args])
+        elif isinstance(args, os.PathLike):
+            if shell:
+                raise TypeError('path-like args is not allowed when '
+                                'shell is true')
+            args = list2cmdline([args])
+        else:
+            args = list2cmdline(args)
+    
+        if executable is not None:
+            executable = os.fsdecode(executable)
+    
+        # Process startup details
+        if startupinfo is None:
+            startupinfo = STARTUPINFO()
+        else:
+            # bpo-34044: Copy STARTUPINFO since it is modified above,
+            # so the caller can reuse it multiple times.
+            startupinfo = startupinfo.copy()
+    
+        use_std_handles = -1 not in (p2cread, c2pwrite, errwrite)
+        if use_std_handles:
+            startupinfo.dwFlags |= _winapi.STARTF_USESTDHANDLES
+            startupinfo.hStdInput = p2cread
+            startupinfo.hStdOutput = c2pwrite
+            startupinfo.hStdError = errwrite
+    
+        attribute_list = startupinfo.lpAttributeList
+        have_handle_list = bool(attribute_list and
+                                "handle_list" in attribute_list and
+                                attribute_list["handle_list"])
+    
+        # If we were given an handle_list or need to create one
+        if have_handle_list or (use_std_handles and close_fds):
+            if attribute_list is None:
+                attribute_list = startupinfo.lpAttributeList = {}
+            handle_list = attribute_list["handle_list"] = \
+                list(attribute_list.get("handle_list", []))
+    
+            if use_std_handles:
+                handle_list += [int(p2cread), int(c2pwrite), int(errwrite)]
+    
+            handle_list[:] = self._filter_handle_list(handle_list)
+    
+            if handle_list:
+                if not close_fds:
+                    warnings.warn("startupinfo.lpAttributeList['handle_list'] "
+                                  "overriding close_fds", RuntimeWarning)
+    
+                # When using the handle_list we always request to inherit
+                # handles but the only handles that will be inherited are
+                # the ones in the handle_list
+                close_fds = False
+    
+        if shell:
+            startupinfo.dwFlags |= _winapi.STARTF_USESHOWWINDOW
+            startupinfo.wShowWindow = _winapi.SW_HIDE
+            comspec = os.environ.get("COMSPEC", "cmd.exe")
+            args = '{} /c "{}"'.format (comspec, args)
+    
+        if cwd is not None:
+            cwd = os.fsdecode(cwd)
+    
+        sys.audit("subprocess.Popen", executable, args, cwd, env)
+    
+        # Start the process
+        try:
+&gt;           hp, ht, pid, tid = _winapi.CreateProcess(executable, args,
+                                     # no special security
+                                     None, None,
+                                     int(not close_fds),
+                                     creationflags,
+                                     env,
+                                     cwd,
+                                     startupinfo)
+E                                    FileNotFoundError: [WinError 2] The system cannot find the file specified
+
+..\..\..\..\AppData\Local\Programs\Python\Python310\lib\subprocess.py:1435: FileNotFoundError</failure></testcase></testsuite></testsuites>
