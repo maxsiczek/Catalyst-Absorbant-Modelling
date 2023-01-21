@@ -3,7 +3,7 @@ from ase.constraints import FixAtoms
 import os
 
 
-for i in range(0,99):
+for i in range(0,100):
     os.chdir(str(i))
     atoms_obj=vasp.read_vasp('POSCAR')
     c = FixAtoms(indices=[atom.index for atom in atoms_obj if atoms_obj.get_positions()[atom.index][2] < 11])
