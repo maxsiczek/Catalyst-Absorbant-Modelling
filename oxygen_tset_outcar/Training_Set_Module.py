@@ -16,8 +16,6 @@ from ase.io import vasp
 import os
 import pickle
 import shutil, os
-from ase.io import vasp
-from ase.constraints import FixAtoms
 
 
 # list_of_atoms=[['Pd','Au'], ['Pd','Au'], ['Pd','Au'], ['X', 'O']]
@@ -58,7 +56,7 @@ class TsetNoAdsorbate:
 
         save_object(strucs, 'structure.pkl')
 
-    def create_poscar_files1(self):
+    def create_poscar_files(self):
         os.chdir(self.directory)
         pri2 = fcc111(self.atoms[0], size=(1, 1, 3))  # 3-atomic-layer Pd slab
         pri2.center(vacuum=10.0, axis=2)  # add vacuum along z-axis
@@ -116,8 +114,8 @@ class TsetAdsorbate:
             print("{0:<19d}|{1:<19s}|{2:<19.3f}".format(i, symbol, z_coord))
         platt2 = ParentLattice(pri2, site_symbols=[['Pd', 'Au'], ['Pd', 'Au'], ['Pd', 'Au'], ['X', adsorbate]])
         self.scell2 = SuperCell(platt2, [4, 4])
-        # self.scell2.get_sublattice_types(pretty_print=True)
-        # print(platt2.get_idx_subs())
+        self.scell2.get_sublattice_types(pretty_print=True)
+        print(platt2.get_idx_subs())
         self.sset = StructuresSet(platt2)
 
     def sset_obj(self):
@@ -146,7 +144,7 @@ class TsetAdsorbate:
             strucs = pickle.load(inp)
             print(strucs)
         sset2.add_structures(strucs)
-        nstruc = self.size
+        nstruc = sset2.get_nstr()
         print(nstruc)
         print(sset2.get_structure(0).get_sigmas())
 
@@ -184,7 +182,7 @@ class TsetAdsorbate:
             out.writelines(lines)
             out.close()
 
-        for i in range(0, self.size):
+        for i in range(0, 100):
             os.chdir(str(i))
             with open(r"POSCAR", 'r+') as fp:
                 # read an store all lines into list
@@ -199,11 +197,4 @@ class TsetAdsorbate:
             replace_line("POSCAR", 0, 'Au  O Pd\n')
             replace_line("POSCAR", 5, ' Au  O   Pd\n')
             replace_line("POSCAR", 6, '  24   8  24\n')
-            os.chdir('..')
-        for i in range(0, 100):
-            os.chdir(str(i))
-            atoms_obj = vasp.read_vasp('POSCAR')
-            c = FixAtoms(indices=[atom.index for atom in atoms_obj if atoms_obj.get_positions()[atom.index][2] < 11])
-            atoms_obj.set_constraint(c)
-            vasp.write_vasp('POSCAR', atoms_obj, sort=True)
-            os.chdir('..')
+            os.chdir('../..')
