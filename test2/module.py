@@ -18,7 +18,7 @@ import pickle
 import shutil, os
 
 
-# list_of_atoms=[['Pd','Au'], ['Pd','Au'], ['Pd','Au'], ['X', 'O']]
+# list_of_atoms=[['Pd','Au'], ['Pd','Au'], ['Pd','Au'], ['X', 'O']
 # training_set_size=100
 # concentration=[60,40]
 
