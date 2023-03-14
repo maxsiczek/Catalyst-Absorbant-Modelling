@@ -90,7 +90,7 @@ class TsetNoAdsorbate:
 
             # Writes POSCAR file
             os.chdir(str(i))
-            vasp.write_vasp('POSCAR', sset2.get_structure(i), None, False, True)
+            vasp.write_vasp('Poscar samples/POSCAR', sset2.get_structure(i), None, False, True)
             os.chdir('../..')
         for i in range(0, self.size):
             files = ['INCAR', 'KPOINTS', 'POTCAR', 'relax.qs']
@@ -159,7 +159,7 @@ class TsetAdsorbate:
         for i in range(0, nstruc):
             createFolder('./{}/'.format(i))
             os.chdir(str(i))
-            vasp.write_vasp('POSCAR', sset2.get_structure(i), sort=True)
+            vasp.write_vasp('Poscar samples/POSCAR', sset2.get_structure(i), sort=True)
             os.chdir('..')
         for i in range(0, nstruc):
             createFolder('Viewsset')
@@ -184,7 +184,7 @@ class TsetAdsorbate:
 
         for i in range(0, 100):
             os.chdir(str(i))
-            with open(r"POSCAR", 'r+') as fp:
+            with open(r"Poscar samples/POSCAR", 'r+') as fp:
                 # read an store all lines into list
                 lines = fp.readlines()
                 # move file pointer to the beginning of a file
@@ -194,7 +194,7 @@ class TsetAdsorbate:
                 fp.writelines(lines[:-8])
                 # start writing lines
                 # iterate line and line number
-            replace_line("POSCAR", 0, 'Au  O Pd\n')
-            replace_line("POSCAR", 5, ' Au  O   Pd\n')
-            replace_line("POSCAR", 6, '  24   8  24\n')
+            replace_line("Poscar samples/POSCAR", 0, 'Au  O Pd\n')
+            replace_line("Poscar samples/POSCAR", 5, ' Au  O   Pd\n')
+            replace_line("Poscar samples/POSCAR", 6, '  24   8  24\n')
             os.chdir('../..')

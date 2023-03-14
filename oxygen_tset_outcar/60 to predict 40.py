@@ -18,6 +18,7 @@ import pickle
 from clusterx.calculators.emt import EMT2 # Load the EMT calculator from ASE
 from clusterx.visualization import plot_property_vs_concentration
 import math
+import ast
 
 
 pri2 = fcc111('Pd', size=(1, 1, 3))
@@ -92,25 +93,36 @@ print('RMSE of test set:',RMSEtest)
 
 
 
+with open('Poscar Samples Outcar/energies.txt', 'r') as file:
+    line1 = file.readline().strip()  # read first line
+    dict1 = ast.literal_eval(line1)  # convert to dictionary
+
+    line2 = file.readline().strip()  # read second line
+    dict2 = ast.literal_eval(line2)  # convert to dictionary
+
+print(dict1)
+print(dict2)
+
 fig, ax = plt.subplots()
-l1=plt.scatter(pred_en_list,real_en,color='green')
-l2=plt.scatter(pred_en_list2,real_en2,color='red')
+l1=plt.scatter(pred_en_list,real_en,color='green',s=100)
+l2=plt.scatter(pred_en_list2,real_en2,color='red',s=100)
+l3=plt.scatter(dict1.values(),dict2.values(),color='black',s=100)
 plt.xlabel("Predicted Energies (eV)",fontsize=24)
 plt.ylabel("Calculated Energies (eV)",fontsize=24)
-plt.xlim(-236,-228)
-plt.ylim(-236,-228)
+plt.xlim(-240,-228)
+plt.ylim(-240,-228)
 # plt.title('Calculated Energy vs Cluster Expansion Predicted Energy')
 
-plt.legend((l1,l2),
-           ('New Structures','Structures used to Train Model'),
+plt.legend((l1,l2,l3),
+           ('Test Set','Training Set','MC Samples'),
            scatterpoints=1,
            loc='lower right',
            ncol=3,
            fontsize=22)
 
 ax.plot([0, 1], [0, 1], transform=ax.transAxes)
-plt.xticks(fontsize=24)
-plt.yticks(fontsize=24)
+plt.xticks(fontsize=32)
+plt.yticks(fontsize=32)
 plt.show()
 
 
