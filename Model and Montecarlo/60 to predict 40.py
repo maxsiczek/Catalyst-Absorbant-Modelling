@@ -78,8 +78,8 @@ real_en=temp[60:100]
 real_en2=temp[0:60]
 
 fig, ax = plt.subplots()
-l1=plt.scatter(pred_en_list,real_en,color='green')
-l2=plt.scatter(pred_en_list2,real_en2,color='red')
+l1=plt.scatter(pred_en_list,real_en,color='green',s=100)
+l2=plt.scatter(pred_en_list2,real_en2,color='red',s=100)
 plt.xlabel("Predicted Energies (eV)",fontsize=24)
 plt.ylabel("Calculated Energies (eV)",fontsize=24)
 plt.xlim(-193.5,-190.5)
@@ -94,8 +94,8 @@ plt.legend((l1,l2),
            fontsize=22)
 
 ax.plot([0, 1], [0, 1], transform=ax.transAxes)
-plt.xticks(fontsize=24)
-plt.yticks(fontsize=24)
+plt.xticks(fontsize=32)
+plt.yticks(fontsize=32)
 plt.show()
 
 

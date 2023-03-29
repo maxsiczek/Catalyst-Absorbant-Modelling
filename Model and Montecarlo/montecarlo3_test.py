@@ -165,10 +165,10 @@ print(gl3)
 
 
 print('space')
-plt.plot(gl0)
-plt.plot(gl1)
-plt.plot(gl2)
-plt.plot(gl3)
+plt.plot(gl0,linewidth=3,color='red')
+plt.plot(gl1,linewidth=3,color='blue')
+plt.plot(gl2,linewidth=3,color='green')
+plt.plot(gl3,linewidth=3,color='purple')
 legend_drawn_flag = True
 g0="Pd3"
 g1="Au1Pd2"
