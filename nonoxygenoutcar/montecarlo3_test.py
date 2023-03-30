@@ -15,36 +15,30 @@ from clusterx.visualization import plot_property_vs_concentration
 from ase.io import vasp
 import os
 import pickle
-import clusterx
 
-pri2 = fcc111('Pd', size=(1, 1, 3))
-add_adsorbate(pri2, 'X', 1.7, 'fcc')  # on-top vacancy site
+pri2 = fcc111('Pd', size=(1, 1, 3))  # 3-atomic-layer Pd slab
 pri2.center(vacuum=10.0, axis=2)  # add vacuum along z-axis
-
-print("{0:<19s}|{1:<19s}|{2:<19s}".format("Atom index", "Chemical symbol", "z coordinate"))
-for i, (symbol, z_coord) in enumerate(zip(pri2.get_chemical_symbols(), pri2.get_positions()[:, 2])):
-    print("{0:<19d}|{1:<19s}|{2:<19.3f}".format(i, symbol, z_coord))
-platt2 = ParentLattice(pri2, site_symbols=[['Pd', 'Au'], ['Pd', 'Au'], ['Pd', 'Au'], ['X', 'O']])
+# Build a 3-layer Au and Pd slab
+platt2 = ParentLattice(pri2, site_symbols=[['Pd', 'Au'], ['Pd', 'Au'], ['Pd', 'Au']])
+# Build the parent lattice and a 4x4 supercell
 scell2 = SuperCell(platt2, [4, 4])
-scell2.get_sublattice_types(pretty_print=True)
 sset6 = StructuresSet(platt2)
 
 
 
-
-with open('structure_oxygen.pkl', 'rb') as inp:
+with open('structure_no_oxygen.pkl', 'rb') as inp:
     strucs = pickle.load(inp)
     print(strucs)
 
 sset6.add_structures(strucs)
-print('first structure=',sset6.get_structure(0).get_atomic_numbers())
+print('first structure=',sset6.get_structure(0).get_sigmas())
 
 from clusterx.calculators.emt import EMT2 # Load the EMT calculator from ASE
 from clusterx.visualization import plot_property_vs_concentration
 
 sset6.set_calculator(EMT2())
 #temp=sset6.calculate_property("total_energy_emt") # Calculate energies with Effective Medium Theory calculator of ASE
-temp=[-233.75019001, -230.39949145, -230.41642605, -232.92550792, -232.25474271, -232.06625406, -231.03230612, -231.01794057, -232.53805623, -232.0541816, -230.56729887, -231.83706403, -231.64181822, -232.64229974, -231.1761779, -233.37888234, -232.29175595, -231.25529331, -231.14917998, -233.27754977, -230.51711417, -232.33493018, -230.56351581, -232.71507182, -232.21259049, -230.11796393, -230.52814574, -232.9856879, -232.2989704, -232.79855691, -229.58941518, -233.89702516, -231.90692845, -231.45051152, -234.68676429, -232.33541047, -232.32402045, -231.58213114, -233.91299888, -232.19509312, -232.05603928, -230.37099549, -232.88551241, -231.7170679, -230.4244832, -233.53623428, -233.60564537, -231.37999226, -230.42961338, -230.37825858, -232.15860339, -230.8508302, -231.11564108, -231.40353516, -230.67177557, -230.90346862, -233.29469413, -230.92520531, -233.31731473, -232.8347633, -230.34773993, -229.08039305, -230.31953305, -230.64803972, -232.59785396, -231.84562338, -233.80359322, -232.11151289, -231.77306496, -230.58876462, -228.45575599, -235.12152543, -235.0470921, -233.6964058, -230.49305883, -232.32509228, -230.07314787, -231.72602331, -228.67022594, -230.58062675, -232.05714829, -233.11207428, -231.78318343, -232.81874704, -231.69051811, -231.04156462, -232.13916759, -232.26584581, -232.1842805, -233.6457825, -233.16723773, -232.74395021, -232.81595047, -232.41401241, -231.75681963, -232.08839623, -229.31978215, -230.24534805, -230.86939434, -232.939754]
+temp=[-192.64947213, -192.22250837, -192.33364332, -192.25227456, -191.84170066, -192.1310434, -192.13449204, -192.05448528, -191.89050875, -192.04745238, -191.95556471, -191.94254732, -192.8753106, -192.99646496, -191.84211376, -191.60868848, -192.34065373, -191.95844178, -192.48282519, -192.25211357, -192.96175073, -192.01300452, -191.10478619, -191.61968718, -191.20984624, -192.45953042, -192.44510406, -191.52608294, -192.61563919, -192.85308486, -192.02095283, -191.9626645, -191.65174063, -192.37738382, -192.12413639, -191.49837309, -191.93507314, -192.45463796, -192.4559693, -192.57346049, -192.14214026, -192.25215371, -192.12256829, -192.75368256, -191.55719723, -191.72188046, -191.19747162, -191.25084179, -192.16154752, -191.88272261, -192.48627651, -192.2672662, -191.76589481, -192.47460761, -191.97112479, -192.2227161, -193.25304677, -192.36966571, -192.37165343, -191.63640973, -191.74317386, -192.4840845, -192.1523178, -191.26079156, -193.24923438, -191.85318116, -192.06647169, -191.61452741, -192.37045668, -191.39089627, -191.60422282, -191.42221292, -191.16978818, -192.4207627, -192.15469215, -192.24347073, -191.56172867, -192.25620512, -192.41322681, -192.03282623, -191.2106675, -191.81973175, -191.61886359, -191.96610437, -192.21548594, -192.87616701, -192.36033651, -191.98486517, -191.52151152, -192.09938557, -192.69932052, -191.47449131, -192.08331785, -192.44591596, -192.30435355, -192.30594017, -192.85653867, -192.63877354, -192.08050832, -192.21283578]
 
 
 sset6.set_property_values(property_name='total_energy_emt', property_vals=temp)
@@ -72,12 +66,10 @@ from clusterx.visualization import plot_predictions_vs_target
 #Montecarlo
 from clusterx.monte_carlo import MonteCarlo
 from clusterx.monte_carlo import MonteCarloTrajectory
-print(sset6.get_structure(0).get_atomic_numbers())
+
 platt2.get_idx_subs()
-mc1=MonteCarlo(cemodel1,scell2,{0:[46, 79], 1:[0,8]},no_of_swaps=1)
-mc2=mc1.metropolis([8.6*10**-5,1000],20000,[79, 79, 79,  0, 79, 46, 46,  0 ,79, 46, 46,  0, 46, 79 ,46,  0, 46 ,79, 46 , 0,46, 46, 46 , 0,
- 46, 79 ,79 , 0 ,79, 46, 79 , 0,46 ,79 ,79 , 0 ,79 ,79, 46 , 0 ,79 ,46, 46 , 0 ,79 ,79, 79,  0,
- 79 ,46 ,79 , 0 ,46 ,46 ,46,  0 ,79 ,46, 79,  0,46 ,46 ,79,  8])
+mc1=MonteCarlo(cemodel1,scell2,{0:[46, 79]},no_of_swaps=1)
+mc2=mc1.metropolis([8.6*10**-5,1000],20000,[46, 79, 79, 46, 46, 46, 79, 46, 79, 46, 79, 79, 46, 79, 79, 79, 46, 79, 46, 79, 46, 79, 46, 79, 46, 46, 46, 79, 79, 46, 79, 46, 46, 79, 79, 46, 79, 79, 46, 46, 46, 46, 79, 79, 79, 79, 46, 46])
 nid=mc2.get_sampling_step_nos()
 print('trajectory entries',nid)
 print('Number of accepted=',len(mc2.get_model_total_energies()))
@@ -86,27 +78,14 @@ print('Number of accepted=',len(mc2.get_model_total_energies()))
 import matplotlib.pyplot as plt
 # plt.plot(mc2.get_model_total_energies()-mc2.get_model_total_energies()[0])
 # plt.xlabel("Number of Sampling Steps")
-# plt.ylabel("Energy (eV)")csdcd
+# plt.ylabel("Energy (eV)")
 # plt.show()
 # plt.hist(mc2.get_model_total_energies()-mc2.get_model_total_energies()[0])
 # plt.xlabel("Energy (eV)")
 # plt.ylabel("Frequency")
 # plt.show()
 
-vasp.write_vasp('POSCAR', mc2.get_structure_at_step(5000),sort=True)
-# Open a file for writing
-# with open("Poscar samples/energies.txt", "a") as f:
-#     # Write the string to the file
-#     f.write(str(mc2.get_sampling_step_entry_at_step(5000)['model_total_energy']))
-
-
-print(mc2.get_structure_at_step(5000).get_atoms())
-print(mc2.get_sampling_step_entry_at_step(5000)['model_total_energy'])
-t=clusterx.structure.Structure(scell2,[79, 79, 79,  0, 79, 46, 46,  0 ,79, 46, 46,  0, 46, 79 ,46,  0, 46 ,79, 46 , 0,46, 46, 46 , 0,
- 46, 79 ,79 , 0 ,79, 46, 79 , 0,46 ,79 ,79 , 0 ,79 ,79, 46 , 0 ,79 ,46, 46 , 0 ,79 ,79, 79,  0,
- 79 ,46 ,79 , 0 ,46 ,46 ,46,  0 ,79 ,46, 79,  0,46 ,46 ,79,  8])
-print(cemodel1.predict(mc2.get_structure_at_step(5000)))
-print(cemodel1.predict(t))
+vasp.write_vasp('POSCAR',mc2.get_structure_at_step(1000))
 
 gl0 = []
 gl1 = []
@@ -128,10 +107,10 @@ for i in nid:
     s=mc2.get_structure_at_step(i).get_atomic_numbers()
     # unique, counts = np.unique(s, return_counts=True)
     # print(dict(zip(unique, counts))) Tests concentration of the samples
-    t1=[s[2],s[18],s[6]]
-    t2=[s[26],s[30],s[42]]
-    t3=[s[50],s[38],s[54]]
-    t4=[s[46],s[58],s[62]]
+    t1=[s[2],s[5],s[14]]
+    t2=[s[8],s[17],s[20]]
+    t3=[s[26],s[29],s[38]]
+    t4=[s[35],s[47],s[44]]
     for j in [t1, t2, t3, t4]:
         if j.count(79) == 0:
             g0 = g0 + 1
@@ -186,10 +165,10 @@ print(gl3)
 
 
 print('space')
-plt.plot(gl0,linewidth=3,color='red')
-plt.plot(gl1,linewidth=3,color='blue')
-plt.plot(gl2,linewidth=3,color='green')
-plt.plot(gl3,linewidth=3,color='purple')
+plt.plot(gl0)
+plt.plot(gl1)
+plt.plot(gl2)
+plt.plot(gl3)
 legend_drawn_flag = True
 g0="Pd3"
 g1="Au1Pd2"

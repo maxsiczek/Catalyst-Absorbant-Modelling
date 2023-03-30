@@ -15,7 +15,6 @@ from clusterx.visualization import plot_property_vs_concentration
 from ase.io import vasp
 import os
 import pickle
-import clusterx
 
 pri2 = fcc111('Pd', size=(1, 1, 3))
 add_adsorbate(pri2, 'X', 1.7, 'fcc')  # on-top vacancy site
@@ -31,13 +30,13 @@ sset6 = StructuresSet(platt2)
 
 
 
-
 with open('structure_oxygen.pkl', 'rb') as inp:
     strucs = pickle.load(inp)
     print(strucs)
 
 sset6.add_structures(strucs)
 print('first structure=',sset6.get_structure(0).get_atomic_numbers())
+inits=sset6.get_structure(1).get_atomic_numbers()
 
 from clusterx.calculators.emt import EMT2 # Load the EMT calculator from ASE
 from clusterx.visualization import plot_property_vs_concentration
@@ -72,12 +71,10 @@ from clusterx.visualization import plot_predictions_vs_target
 #Montecarlo
 from clusterx.monte_carlo import MonteCarlo
 from clusterx.monte_carlo import MonteCarloTrajectory
-print(sset6.get_structure(0).get_atomic_numbers())
+
 platt2.get_idx_subs()
-mc1=MonteCarlo(cemodel1,scell2,{0:[46, 79], 1:[0,8]},no_of_swaps=1)
-mc2=mc1.metropolis([8.6*10**-5,1000],20000,[79, 79, 79,  0, 79, 46, 46,  0 ,79, 46, 46,  0, 46, 79 ,46,  0, 46 ,79, 46 , 0,46, 46, 46 , 0,
- 46, 79 ,79 , 0 ,79, 46, 79 , 0,46 ,79 ,79 , 0 ,79 ,79, 46 , 0 ,79 ,46, 46 , 0 ,79 ,79, 79,  0,
- 79 ,46 ,79 , 0 ,46 ,46 ,46,  0 ,79 ,46, 79,  0,46 ,46 ,79,  8])
+mc1=MonteCarlo(cemodel1,scell2,{0:[46, 79],1:[0,8]},no_of_swaps=1,ensemble='canonical',sublattice_indices=[1])
+mc2=mc1.metropolis([8.6*10**-5,1000],20000,inits)
 nid=mc2.get_sampling_step_nos()
 print('trajectory entries',nid)
 print('Number of accepted=',len(mc2.get_model_total_energies()))
@@ -86,27 +83,14 @@ print('Number of accepted=',len(mc2.get_model_total_energies()))
 import matplotlib.pyplot as plt
 # plt.plot(mc2.get_model_total_energies()-mc2.get_model_total_energies()[0])
 # plt.xlabel("Number of Sampling Steps")
-# plt.ylabel("Energy (eV)")csdcd
+# plt.ylabel("Energy (eV)")
 # plt.show()
 # plt.hist(mc2.get_model_total_energies()-mc2.get_model_total_energies()[0])
 # plt.xlabel("Energy (eV)")
 # plt.ylabel("Frequency")
 # plt.show()
 
-vasp.write_vasp('POSCAR', mc2.get_structure_at_step(5000),sort=True)
-# Open a file for writing
-# with open("Poscar samples/energies.txt", "a") as f:
-#     # Write the string to the file
-#     f.write(str(mc2.get_sampling_step_entry_at_step(5000)['model_total_energy']))
-
-
-print(mc2.get_structure_at_step(5000).get_atoms())
-print(mc2.get_sampling_step_entry_at_step(5000)['model_total_energy'])
-t=clusterx.structure.Structure(scell2,[79, 79, 79,  0, 79, 46, 46,  0 ,79, 46, 46,  0, 46, 79 ,46,  0, 46 ,79, 46 , 0,46, 46, 46 , 0,
- 46, 79 ,79 , 0 ,79, 46, 79 , 0,46 ,79 ,79 , 0 ,79 ,79, 46 , 0 ,79 ,46, 46 , 0 ,79 ,79, 79,  0,
- 79 ,46 ,79 , 0 ,46 ,46 ,46,  0 ,79 ,46, 79,  0,46 ,46 ,79,  8])
-print(cemodel1.predict(mc2.get_structure_at_step(5000)))
-print(cemodel1.predict(t))
+vasp.write_vasp('POSCAR',mc2.get_structure_at_step(1001))
 
 gl0 = []
 gl1 = []
@@ -128,9 +112,9 @@ for i in nid:
     s=mc2.get_structure_at_step(i).get_atomic_numbers()
     # unique, counts = np.unique(s, return_counts=True)
     # print(dict(zip(unique, counts))) Tests concentration of the samples
-    t1=[s[2],s[18],s[6]]
-    t2=[s[26],s[30],s[42]]
-    t3=[s[50],s[38],s[54]]
+    t1=[s[2],s[6],s[18]]
+    t2=[s[34],s[22],s[30]]
+    t3=[s[14],s[26],s[30]]
     t4=[s[46],s[58],s[62]]
     for j in [t1, t2, t3, t4]:
         if j.count(79) == 0:
@@ -186,10 +170,10 @@ print(gl3)
 
 
 print('space')
-plt.plot(gl0,linewidth=3,color='red')
-plt.plot(gl1,linewidth=3,color='blue')
-plt.plot(gl2,linewidth=3,color='green')
-plt.plot(gl3,linewidth=3,color='purple')
+plt.plot(gl0)
+plt.plot(gl1)
+plt.plot(gl2)
+plt.plot(gl3)
 legend_drawn_flag = True
 g0="Pd3"
 g1="Au1Pd2"
