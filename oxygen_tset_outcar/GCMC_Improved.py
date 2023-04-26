@@ -1,3 +1,4 @@
+import ase.visualize
 from ase.build import fcc111, add_adsorbate  # ASE's utilities to build the surface
 from clusterx.parent_lattice import ParentLattice
 from clusterx.structures_set import StructuresSet
@@ -10,12 +11,15 @@ import numpy as np
 from clusterx.super_cell import SuperCell
 import numpy as np
 from clusterx.structures_set import StructuresSet
+from clusterx import structure
 from clusterx.calculators.emt import EMT2 # Load the EMT calculator from ASE
 from clusterx.visualization import plot_property_vs_concentration
 from ase.io import vasp
 import os
 import pickle
 import clusterx
+import random
+from ase import *
 
 pri2 = fcc111('Pd', size=(1, 1, 3))
 add_adsorbate(pri2, 'X', 1.7, 'fcc')  # on-top vacancy site
@@ -71,173 +75,114 @@ from clusterx.visualization import plot_predictions_vs_target
 
 #Montecarlo
 from clusterx.monte_carlo import MonteCarlo
-from clusterx.monte_carlo import MonteCarloTrajectory
-print(sset6.get_structure(0).get_atomic_numbers())
-platt2.get_idx_subs()
-mc1=MonteCarlo(cemodel1,scell2,{0:[46, 79], 1:[0,8]},no_of_swaps=1,sublattice_indices=[1])
-mc2=mc1.metropolis([8.6*10**-5,1000],10000,[79, 79, 79,  8, 79, 46, 46,  8 ,79, 46, 46,  8, 46, 79 ,46,  8, 46 ,79, 46 , 8,46, 46, 46 , 8,
- 46, 79 ,79 , 8 ,79, 46, 79 , 8,46 ,79 ,79 , 8 ,79 ,79, 46 , 8 ,79 ,46, 46 , 8 ,79 ,79, 79,  8,
- 79 ,46 ,79 , 8 ,46 ,46 ,46,  8 ,79 ,46, 79,  8,46 ,46 ,79,  8])
-nid=mc2.get_sampling_step_nos()
-print('trajectory entries',nid)
-print('Number of accepted=',len(mc2.get_model_total_energies()))
+
+N_total = 5000
+init_struc = [79, 79, 79,  0, 79, 46, 46,  8 ,79, 46, 46,  0, 46, 79 ,46, 8, 46 ,79, 46 , 0,46, 46, 46 , 8,46, 79 ,79 , 0 ,79, 46, 79 , 8,46 ,79 ,79 , 0 ,79 ,79, 46 , 8,79 ,46, 46 , 0 ,79 ,79, 79,  8, 79 ,46 ,79 , 0 ,46 ,46 ,46,  8 ,79 ,46, 79,  0,46 ,46 ,79,  8]
+GCMC_struc = init_struc
+trajectory = []
+
+# total num of vacancies
+N_tot = 16
+beta = (8.6 * 10 ** (-5) * 1000)
+chem_pot = 10**0/ beta
 
 
-import matplotlib.pyplot as plt
-# plt.plot(mc2.get_model_total_energies()-mc2.get_model_total_energies()[0])
-# plt.xlabel("Number of Sampling Steps")
-# plt.ylabel("Energy (eV)")csdcd
-# plt.show()
-# plt.hist(mc2.get_model_total_energies()-mc2.get_model_total_energies()[0])
-# plt.xlabel("Energy (eV)")
-# plt.ylabel("Frequency")
-# plt.show()
-
-vasp.write_vasp('POSCAR', mc2.get_structure_at_step(5000),sort=True)
-# Open a file for writing
-# with open("Poscar samples/energies.txt", "a") as f:
-#     # Write the string to the file
-#     f.write(str(mc2.get_sampling_step_entry_at_step(5000)['model_total_energy']))
+for i in range(0, N_total):
+    # choose with equal probability
+    # 1, 2, or 3
+    random_step = random.choice([1,2,3])
 
 
-print(mc2.get_structure_at_step(5000).get_atoms())
-print(mc2.get_sampling_step_entry_at_step(5000)['model_total_energy'])
-t=clusterx.structure.Structure(scell2,[79, 79, 79,  0, 79, 46, 46,  0 ,79, 46, 46,  0, 46, 79 ,46,  0, 46 ,79, 46 , 0,46, 46, 46 , 0,
- 46, 79 ,79 , 0 ,79, 46, 79 , 0,46 ,79 ,79 , 0 ,79 ,79, 46 , 0 ,79 ,46, 46 , 0 ,79 ,79, 79,  0,
- 79 ,46 ,79 , 0 ,46 ,46 ,46,  0 ,79 ,46, 79,  0,46 ,46 ,79,  8])
-print(cemodel1.predict(mc2.get_structure_at_step(5000)))
-print(cemodel1.predict(t))
+    # 1 swap MC (regular MC) move
+    if random_step == 1:
+        mc1 = MonteCarlo(cemodel1, scell2, {0: [46, 79], 1 : [0, 8] }, no_of_swaps=1,sublattice_indices=[1])
+        mc2 = mc1.metropolis([8.6 * 10 ** -5, 1000], 1, GCMC_struc)
+        nentries = len(mc2.get_model_total_energies())
+        GCMC_struc=mc2.get_structure_at_step(nentries).get_atomic_numbers().tolist()
+        print('Entries', nentries)
+        if nentries == 2:
+            trajectory.append(structure.Structure(scell2, decoration=GCMC_struc))
+        else:
+            GCMC_struc=GCMC_struc
 
-gl0 = []
-gl1 = []
-gl2 = []
-gl3 = []
 
-gb0 = []
-gb1 = []
-gb2 = []
-gb3 = []
+    # 2 O addition GCMC move
+    # count the num of O atoms in the structure set that equal to No
+    if random_step == 2 and GCMC_struc.count(8) < N_tot:
+        nO=GCMC_struc.count(8)
+        # Randomly select one of the indices of the 0's in the list
+        random_vacancy = random.choice([i for i, x in enumerate(GCMC_struc) if x == 0])
+
+        # Create a new list that is a copy of the original list with the selected 0 changed to 8
+        new_struc = [8 if i == random_vacancy else x for i, x in enumerate(GCMC_struc)]
 
 
 
-for i in nid:
-    g0 = 0
-    g1 = 0
-    g2 = 0
-    g3 = 0
-    s=mc2.get_structure_at_step(i).get_atomic_numbers()
-    # unique, counts = np.unique(s, return_counts=True)
-    # print(dict(zip(unique, counts))) Tests concentration of the samples
-    t1=[s[2],s[18],s[6]]
-    t2=[s[26],s[30],s[42]]
-    t3=[s[50],s[38],s[54]]
-    t4=[s[46],s[58],s[62]]
-    for j in [t1, t2, t3, t4]:
-        if j.count(79) == 0:
-            g0 = g0 + 1
-        if j.count(79) == 1:
-            g1 = g1 + 1
-        if j.count(79) == 2:
-            g2 = g2 + 1
-        if j.count(79) == 3:
-            g3 = g3 + 1
-    gb0.append(g0)
-    gb1.append(g1)
-    gb2.append(g2)
-    gb3.append(g3)
-
-    gl0.append(sum(gb0))
-    gl1.append(sum(gb1))
-    gl2.append(sum(gb2))
-    gl3.append(sum(gb3))
+        # randomly choose on of these
+        # make a new strcutre with the O atom added^
 
 
+        # calculate Energy of this new struc = E2
+        # enregy of the original struc = E1
+        print(GCMC_struc)
+        print(new_struc)
+        E1 = cemodel1.predict(structure.Structure(scell2, decoration=GCMC_struc))
+        E2 = cemodel1.predict(structure.Structure(scell2, decoration=new_struc))
 
-print(gb0)
-print(gb1)
-print(gb2)
-print(gb3)
+         # calc. acceptance ratio
 
-print('space')
+        acc_ratio = ((N_tot - nO) / (nO + 1)) * np.exp(-beta * (E2 - E1) + beta * chem_pot)
 
-print(gl0)
-print(gl1)
-print(gl2)
-print(gl3)
+    # draw a random num between 0 and 1 = rand_num_1
+        rand_num_1 = random.random()
 
-
-rang=[]
-for i in range(1,len(nid)+1):
-    rang.append(i*4)
-
-
-gl0 = [int(b) / int(m) for b, m in zip(gl0, rang)]
-gl1 = [int(b) / int(m) for b, m in zip(gl1, rang)]
-gl2 = [int(b) / int(m) for b, m in zip(gl2, rang)]
-gl3 = [int(b) / int(m) for b, m in zip(gl3, rang)]
-
-print(gl0)
-print(gl1)
-print(gl2)
-print(gl3)
+        if rand_num_1 < acc_ratio:
+            GCMC_struc = new_struc
+            print('addtion accepted')
+            trajectory.append(structure.Structure(scell2, decoration=GCMC_struc))
+        else:
+            GCMC_struc = GCMC_struc
+            print('addtion not accepted')
 
 
+    if random_step == 3 and GCMC_struc.count(8) > 0 :
+        nO=GCMC_struc.count(8)
+        # Randomly select one of the indices of the 8's in the list
+        random_vacancy = random.choice([i for i, x in enumerate(GCMC_struc) if x == 8])
+
+        # Create a new list that is a copy of the original list with the selected 8 changed to 0
+        new_struc = [0 if i == random_vacancy else x for i, x in enumerate(GCMC_struc)]
 
 
-
-print('space')
-plt.plot(gl0,linewidth=3,color='red')
-plt.plot(gl1,linewidth=3,color='blue')
-plt.plot(gl2,linewidth=3,color='green')
-plt.plot(gl3,linewidth=3,color='purple')
-legend_drawn_flag = True
-g0="Pd3"
-g1="Au1Pd2"
-g2="Au2Pd1"
-g3="Au3"
-
-SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
-plt.legend([g0.translate(SUB), g1.translate(SUB),g2.translate(SUB),g3.translate(SUB)], loc='upper right', frameon=legend_drawn_flag,fontsize=24)
-plt.ylabel('Active Site Distribution (%)',fontsize=24)
-plt.xlabel("Number of Accepted Samples",fontsize=24)
-plt.xticks(fontsize=24)
-plt.yticks(fontsize=24)
-# plt.title('Distribution of Active sites per Accepted Sample')
-plt.show()
+        # randomly choose on of these
+        # make a new strucutre with O deleted
 
 
-cutoff=18500
+        # calculate Energy of this new struc = E2
+        # enregy of the original struc = E1
+        print(GCMC_struc)
+        print(new_struc)
+        E1 = cemodel1.predict(structure.Structure(scell2, decoration=GCMC_struc))
+        E2 = cemodel1.predict(structure.Structure(scell2, decoration=new_struc))
 
-del gl0[:cutoff]
-del gl1[:cutoff]
-del gl2[:cutoff]
-del gl3[:cutoff]
+         # calc. acceptance ratio
 
-gm0=np.mean(gl0)
-gm1=np.mean(gl1)
-gm2=np.mean(gl2)
-gm3=np.mean(gl3)
+        acc_ratio = (nO / (N_tot - (nO - 1))) * np.exp(-beta * (E2 - E1) - beta * chem_pot)
 
-print(gm0)
-print(gm1)
-print(gm2)
-print(gm3)
+    # draw a random num between 0 and 1 = rand_num_1
+        rand_num_1 = random.random()
+
+        if rand_num_1 < acc_ratio:
+            GCMC_struc = new_struc
+            print('deletion accepted')
+            trajectory.append(structure.Structure(scell2, decoration=GCMC_struc))
+        else:
+            GCMC_struc = GCMC_struc
+            print('deletion not accepted')
 
 
+print(trajectory)
+print(len(trajectory))
+with open('GCMC_improved_trajectory.pkl', 'wb') as f:
+    pickle.dump(trajectory, f)
 
-# plt.plot(gl0)
-# plt.plot(gl1)
-# plt.plot(gl2)
-# plt.plot(gl3)
-# plt.xlabel('Number of Structures')
-# plt.ylabel('Active Site Distribution (%)')
-#
-# g0="Pd3"
-# g1="Au1Pd2"
-# g2="Au2Pd1"
-# g3="Au3"
-#
-# SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
-# legend_drawn_flag = True
-# plt.legend([g0.translate(SUP), g1.translate(SUP),g2.translate(SUP),g3.translate(SUP)], loc=0, frameon=legend_drawn_flag)
-# plt.show()
